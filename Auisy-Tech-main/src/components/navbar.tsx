@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const navLinks = [
   { label: 'Home', target: 'home' },
@@ -9,23 +10,54 @@ const navLinks = [
 
 export default function Navbar() {
   const [active, setActive] = useState('Home')
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const isHome = location.pathname === '/'
 
   const handleScroll = (label: string, target: string) => {
     setActive(label)
+
+    if (!isHome) {
+      // Navigate to home first, then scroll after render
+      navigate('/', { state: { scrollTo: target } })
+      return
+    }
+
     if (target === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
     const el = document.getElementById(target)
     if (el) {
-      const offset = 80 // navbar height
+      const offset = 80
       const top = el.getBoundingClientRect().top + window.scrollY - offset
       window.scrollTo({ top, behavior: 'smooth' })
     }
   }
 
-  // highlight active link on scroll
+  // Handle scroll-to after navigating from another page
   useEffect(() => {
+    if (isHome && location.state && (location.state as { scrollTo?: string }).scrollTo) {
+      const target = (location.state as { scrollTo: string }).scrollTo
+      setTimeout(() => {
+        if (target === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        } else {
+          const el = document.getElementById(target)
+          if (el) {
+            const offset = 80
+            const top = el.getBoundingClientRect().top + window.scrollY - offset
+            window.scrollTo({ top, behavior: 'smooth' })
+          }
+        }
+      }, 100)
+    }
+  }, [isHome, location.state])
+
+  // highlight active link on scroll (only on home page)
+  useEffect(() => {
+    if (!isHome) return
     const onScroll = () => {
       const sections = navLinks.map(l => ({
         label: l.label,
@@ -42,7 +74,7 @@ export default function Navbar() {
     }
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  }, [isHome])
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
@@ -60,7 +92,7 @@ export default function Navbar() {
               key={link.label}
               onClick={() => handleScroll(link.label, link.target)}
               className={`text-base font-medium transition-colors ${
-                active === link.label
+                active === link.label && isHome
                   ? 'text-orange-500'
                   : 'text-gray-600 hover:text-gray-900'
               }`}

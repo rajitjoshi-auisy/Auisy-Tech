@@ -11,7 +11,10 @@ const clients = [
 // Duplicate for seamless infinite scroll
 const allClients = [...clients, ...clients]
 
+import { useState } from 'react';
+
 export default function ClientTicker() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
     <section className="py-10 bg-white border-y border-gray-100 overflow-hidden">
       <style>{`
@@ -43,18 +46,39 @@ export default function ClientTicker() {
 
         <div className="ticker-track">
           {allClients.map((client, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-center mx-8"
-              style={{ minWidth: '140px' }}
-            >
-              <img
-                src={client.logo}
-                alt={client.name}
-                className="h-25 w-32 object-contain"
-              />
-            </div>
-          ))}
+  <div
+    key={i}
+    onMouseEnter={() => { setHoveredIndex(i); }}
+    onMouseLeave={() => { setHoveredIndex(null); }}
+    className="relative flex items-center justify-center mx-4 cursor-pointer rounded-xl overflow-hidden"
+    style={{ minWidth: '160px', height: '90px' }}
+  >
+    {/* Logo */}
+    <img
+      src={client.logo}
+      alt={client.name}
+      className="w-32 object-contain transition-all duration-300"
+      style={{
+        opacity: hoveredIndex === i ? 0.1 : 1,
+        transform: hoveredIndex === i ? 'scale(0.9)' : 'scale(1)',
+        height: '60px',
+      }}
+    />
+
+    {/* Dark overlay + name on hover */}
+    <div
+      className="absolute inset-0 flex items-center justify-center px-3 rounded-xl transition-all duration-300"
+      style={{
+        background: hoveredIndex === i ? 'rgba(255, 119, 0, 0.5)' : 'transparent',
+        opacity: hoveredIndex === i ? 1 : 0,
+      }}
+    >
+      <span className="text-black font-semibold text-xs text-center leading-tight">
+        {client.name}
+      </span>
+    </div>
+  </div>
+))}
         </div>
       </div>
     </section>

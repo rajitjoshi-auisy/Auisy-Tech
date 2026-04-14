@@ -1,3 +1,6 @@
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { domains } from '@/data/domains'
+
 const quickLinks = [
   { label: 'Home', target: 'home' },
   { label: 'Our Expertise', target: 'expertise' },
@@ -6,6 +9,25 @@ const quickLinks = [
 ]
 
 export default function Footer() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isHome = location.pathname === '/'
+
+  const handleScrollLink = (target: string) => {
+    if (!isHome) {
+      navigate('/', { state: { scrollTo: target } })
+      return
+    }
+    if (target === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      const el = document.getElementById(target)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }
+
   return (
     <footer className="bg-gray-900 text-gray-400 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6">
@@ -46,14 +68,7 @@ export default function Footer() {
               {quickLinks.map(l => (
                 <li key={l.label}>
                   <button
-                    onClick={() => {
-                      const el = document.getElementById(l.target)
-                      if (l.target === 'home') {
-                        window.scrollTo({ top: 0, behavior: 'smooth' })
-                      } else if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }
-                    }}
+                    onClick={() => handleScrollLink(l.target)}
                     className="text-sm hover:text-white transition-colors text-left"
                   >
                     {l.label}
@@ -66,24 +81,17 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-bold mb-5">Domains</h4>
             <ul className="space-y-3">
-  {quickLinks.map(l => (
-    <li key={l.label}>
-      <button
-        onClick={() => {
-          const el = document.getElementById(l.target)
-          if (l.target === 'home') {
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-          } else if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
-        }}
-        className="text-sm hover:text-white transition-colors text-left"
-      >
-        {l.label}
-      </button>
-    </li>
-  ))}
-</ul>
+              {domains.map(d => (
+                <li key={d.slug}>
+                  <Link
+                    to={`/domains/${d.slug}`}
+                    className="text-sm hover:text-white transition-colors"
+                  >
+                    {d.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>

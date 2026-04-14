@@ -1,45 +1,23 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { domains } from '@/data/domains'
 
-const domains = [
-  {
-    title: 'Regulators',
-    description: 'Empowering regulatory bodies with robust, secure, and transparent...',
-    image: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Financial Services',
-    description: 'Driving digital transformation in financial services with scalable and innovative...',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Insurance',
-    description: 'Modernizing insurance operations with intelligent automation and customer-...',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Healthcare',
-    description: 'Enhancing patient care and operational efficiency through cutting-edge...',
-    image: 'https://images.unsplash.com/photo-1504813184591-01572f98c85f?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Industrial Conglomerate',
-    description: 'Optimizing industrial processes and supply chains with robust enterprise...',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Telecommunications',
-    description: 'Enabling seamless connectivity and superior customer experiences in the...',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop',
-  },
-  {
-    title: 'Government Bodies',
-    description: 'Delivering secure, scalable, and citizen-centric digital solutions for government...',
-    image: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=400&h=250&fit=crop',
-  },
+const clients = [
+  { name: 'RPG', logo: '/images/clients/rpg copy.png' },
+  { name: 'Cigna TTK', logo: '/images/clients/Cigna_TTK copy.png' },
+  { name: 'Angel Broking', logo: '/images/clients/Angle_broking copy.png' },
+  { name: 'Amaravati Municipal Corporation', logo: '/images/clients/amaravati.png' },
+  { name: 'IndiaFirst Life Insurance', logo: '/images/clients/Indiafirst_Life_Insurance copy.png' },
+  { name: 'Care Ratings', logo: '/images/clients/Care_ratings copy.png' },
+  { name: 'Mira Bhaindar Municipal Corporation', logo: '/images/clients/Mira_Bhaindar_Muncipal_Corporation copy.png' },
 ]
+const tickerClients = [...clients, ...clients]
 
 export default function Expertise() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+  const featured = domains[0]
+  const rest = domains.slice(1)
 
   return (
     <section id="expertise" className="py-20 bg-white">
@@ -53,26 +31,112 @@ export default function Expertise() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {domains.map((domain, i) => {
-            const isHovered = hoveredIndex === i
+        {/* Featured card — large landscape */}
+        <Link
+          to={`/domains/${featured.slug}`}
+          onMouseEnter={() => setHoveredIndex(0)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          className={`block rounded-lg overflow-hidden border transition-all duration-200 mb-6 bg-white ${
+            hoveredIndex === 0 ? 'border-orange-400 shadow-md' : 'border-gray-100 shadow-sm'
+          }`}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div>
+              <img
+                src={featured.image}
+                alt={featured.title}
+                className="w-full h-64 md:h-full object-cover"
+              />
+            </div>
+
+            {/* Text aligned to top */}
+            <div className="p-8 flex flex-col justify-start">
+              <h3 className={`font-bold text-3xl md:text-[34px] leading-tight mb-4 transition-colors duration-200 ${
+                hoveredIndex === 0 ? 'text-orange-500' : 'text-gray-900'
+              }`}>
+                {featured.title}
+              </h3>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed line-clamp-3">{featured.tagline}</p>
+
+              {/* Bigger stat cards */}
+              <div className="flex flex-wrap gap-3 mb-6">
+                {featured.stats.map(s => (
+                  <div key={s.label} className="px-5 py-3 rounded-lg bg-gray-50 border border-gray-100">
+                    <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Consistent orange button CTA */}
+              <div className="mb-6">
+                <span className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-colors">
+                  View More
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+
+              {/* Mini client ticker */}
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-3">Trusted By</p>
+                <div className="relative overflow-hidden">
+                  <div className="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, white, transparent)' }} />
+                  <div className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, white, transparent)' }} />
+                  <style>{`
+                    @keyframes miniTicker {
+                      0% { transform: translateX(0); }
+                      100% { transform: translateX(-50%); }
+                    }
+                    .mini-ticker-track {
+                      display: flex;
+                      width: max-content;
+                      animation: miniTicker 15s linear infinite;
+                    }
+                    .mini-ticker-track:hover {
+                      animation-play-state: paused;
+                    }
+                  `}</style>
+                  <div className="mini-ticker-track">
+                    {tickerClients.map((client, i) => (
+                      <div key={i} className="flex items-center justify-center mx-4" style={{ minWidth: '80px' }}>
+                        <img
+                          src={client.logo}
+                          alt={client.name}
+                          className="h-7 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Explore CTA label */}
+        <div className="text-center my-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Explore All Domains</p>
+        </div>
+
+        {/* 3x3 grid of remaining 9 domains */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {rest.map((domain, i) => {
+            const idx = i + 1
+            const isHovered = hoveredIndex === idx
             return (
-              <div
-                key={domain.title}
-                onMouseEnter={() => setHoveredIndex(i)}
+              <Link
+                key={domain.slug}
+                to={`/domains/${domain.slug}`}
+                onMouseEnter={() => setHoveredIndex(idx)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className={`rounded-2xl overflow-hidden border transition-all duration-200 cursor-pointer bg-white ${
-                  isHovered
-                    ? 'border-orange-400 shadow-md'
-                    : 'border-gray-100 shadow-sm'
+                className={`group rounded-lg overflow-hidden border transition-all duration-200 bg-white block ${
+                  isHovered ? 'border-orange-400 shadow-md' : 'border-gray-100 shadow-sm'
                 }`}
               >
                 <div className="relative">
-                  {domain.image ? (
-                    <img src={domain.image} alt={domain.title} className="w-full h-48 object-cover" />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-100" />
-                  )}
+                  <img src={domain.image} alt={domain.title} className="w-full h-44 object-cover" />
                 </div>
                 <div className="p-5">
                   <h3 className={`font-bold text-lg mb-2 transition-colors duration-200 ${
@@ -80,12 +144,15 @@ export default function Expertise() {
                   }`}>
                     {domain.title}
                   </h3>
-                  <p className="text-gray-500 text-sm mb-4">{domain.description}</p>
-                  <button className="text-orange-500 text-sm font-semibold hover:underline">
-                    View Projects & Impact &gt;
-                  </button>
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">{domain.tagline}</p>
+                  <span className="text-orange-500 text-sm font-semibold group-hover:underline inline-flex items-center gap-1">
+                    View Projects & Impact
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>
